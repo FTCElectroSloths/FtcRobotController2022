@@ -1,38 +1,11 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
 
 /**
  * This particular OpMode executes a POV Game style Teleop for a direct drive robot
@@ -51,7 +24,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class MecanumRobotTeleop_v2 extends LinearOpMode {
 
     /* Declare OpMode members. */
-    RobotHardwareMecanum robot  = new RobotHardwareMecanum();     // Use a Mecanum's hardware
+    RobotHardwareMecanum robot = new RobotHardwareMecanum();     // Use a Mecanum's hardware
 
 //    double clawOffset = 0;
 //
@@ -79,8 +52,8 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            int newUpTarget;
-            int newDownTarget;
+            int newUpTarget = 0 ;
+            int newDownTarget = 0;
 
             // Run wheels in POV mode (note: The joystick goes negative when pushed forward, so negate it)
             // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
@@ -96,53 +69,109 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
 //                sliderSpeed = -gamepad1.right_trigger;
 //            }
 
-            if (gamepad1.left_bumper){
+/*            if (gamepad1.left_bumper) {
+                robot.closeClaw();
+                //wait(0.25);
+                sleep(250);
                 robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
-                newUpTarget = robot.linearSlider.getCurrentPosition() + 1100;
-                if(newUpTarget > 2000) {
-                    newUpTarget = 2000;
+
+                newUpTarget = robot.linearSlider.getCurrentPosition() + 1200;  //1200
+                //newUpTarget = robot.linearSlider.getCurrentPosition() + 1200;  //1200
+                //newUpTarget = 2400
+                                if (newUpTarget > 2400) {
+                    newUpTarget = 2400;
                 }
                 robot.linearSlider.setTargetPosition(newUpTarget);  //newTarget
                 robot.linearSlider.setPower(1);
                 robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                while(robot.linearSlider.isBusy() ){}
+                while (robot.linearSlider.isBusy()) {
+                }
                 //robot.linearSlider.setPower(0);
             }
+*/
+            if (gamepad1.left_bumper) {
 
-            if (gamepad1.right_bumper){
-                robot.linearSlider.setDirection(DcMotor.Direction.REVERSE);
-                newDownTarget = 0; //robot.linearSlider.getCurrentPosition() - 1000;
-                 robot.linearSlider.setTargetPosition(newDownTarget);  //newTarget
+                robot.closeClaw();
+                //wait(0.25);
+                sleep(250);
+                robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
+                if (newUpTarget <1000) {
+                    newUpTarget = Integer.max(1400,robot.linearSlider.getCurrentPosition() + 1400);  //1200
+
+                }
+                else{
+                    newUpTarget = Integer.max(2200,robot.linearSlider.getCurrentPosition() + 800);  //1200
+                }
+
+
+                //newUpTarget = robot.linearSlider.getCurrentPosition() + 1200;  //1200
+                //newUpTarget = 2200
+                if (newUpTarget > 2200) {
+                    newUpTarget = 2200;
+                }
+                robot.linearSlider.setTargetPosition(newUpTarget);  //newTarget
                 robot.linearSlider.setPower(1);
                 robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                while(robot.linearSlider.isBusy() ){}
+                while (robot.linearSlider.isBusy()) {
+                }
+                //robot.linearSlider.setPower(0);
+            }
+
+            if (gamepad1.right_bumper) {
+                robot.openClaw();
+                sleep(200);
+                robot.driveRobot(-0.35,0,0);
+
+                robot.linearSlider.setPower(0);
+                sleep(200);
+                robot.closeClaw();
+
+                robot.linearSlider.setDirection(DcMotor.Direction.REVERSE);
+                newDownTarget = 0; //robot.linearSlider.getCurrentPosition() - 1000;
+                robot.linearSlider.setTargetPosition(newDownTarget);  //newTarget
+                robot.linearSlider.setPower(.75);
+                robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while (robot.linearSlider.isBusy()) {
+                }
+                sleep(200);
+                robot.openClaw();
                 //robot.linearSlider.setPower(0);
             }
 
 
 
-            if (gamepad1.y){
+           /* if (gamepad1.y){
                 robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
             }
 
             if (gamepad1.a){
                 robot.linearSlider.setDirection(DcMotor.Direction.REVERSE);
-            }
+            }*/
 
-            robot.linearSlider.setPower(gamepad1.left_trigger );
+            robot.linearSlider.setPower(gamepad1.left_trigger);
             //robot.linearSlider.setPower(-gamepad1.right_trigger);
 
 
-            if (gamepad1.dpad_left){
-                robot.openClaw();
-            }
-
-            if (gamepad1.dpad_right){
+            /*if (gamepad1.dpad_left){
                 robot.closeClaw();
             }
 
+            if (gamepad1.dpad_right) {
+                robot.openClaw();
+            }*/
+            if (gamepad1.y || gamepad1.x || gamepad1.b) {
+                robot.openClaw();
+            }
+            if (gamepad1.a) {
+                robot.closeClaw();
+            }
 
-            telemetry.addData("x1",  "%.2f", gamepad1.left_stick_x);
+            //if(gamepad1.right_trigger){
+
+            // }
+
+
+            telemetry.addData("x1", "%.2f", gamepad1.left_stick_x);
             telemetry.addData("y1", "%.2f", -gamepad1.left_stick_y);
             telemetry.addData("Slide", "%.2f", (double) robot.linearSlider.getCurrentPosition());
             telemetry.addData("Left Trigger", "%.2f", gamepad1.left_trigger);
@@ -153,8 +182,8 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
 
             telemetry.update();
 
-  /*
-            robot.moveSliderManually(gamepad2.left_stick_y);
+ /*
+            //robot.moveSliderManually(gamepad2.left_stick_y);
 
             if(gamepad1.a && robot.isSliderIdle)   {
                 robot.lowerSlider();

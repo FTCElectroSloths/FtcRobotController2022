@@ -1,37 +1,7 @@
-/* Copyright (c) 2022 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
@@ -160,9 +130,12 @@ public class RobotHardwareMecanum {
 
 //        clawLeftHand.setPosition(.75); //MID_SERVO higher opens up
 //        clawRightHand.setPosition(.75); // lower opens
+        // 12/9/22
+//        clawLeftHand.setPosition(.45); //MID_SERVO higher opens up
+//        clawRightHand.setPosition(.55); // lower opens
 
-        clawLeftHand.setPosition(.6); //MID_SERVO higher opens up
-        //clawRightHand.setPosition(1); // lower opens
+        clawLeftHand.setPosition(.25);
+        clawRightHand.setPosition(.75);
 
 //        myOpMode.telemetry.addData(">", "Hardware Initialized - Electo Sloths");
 //        myOpMode.telemetry.update();
@@ -170,15 +143,15 @@ public class RobotHardwareMecanum {
 
     public void openClaw(){
         //setClawPositions(0.25);
-        clawLeftHand.setPosition(1);
-        clawRightHand.setPosition(.25);
+        clawLeftHand.setPosition(.45); //.45
+        clawRightHand.setPosition(.55); //.55
     }
 
 
     public void closeClaw(){
         //setClawPositions(-0.25);
-        clawLeftHand.setPosition(.75);
-        clawRightHand.setPosition(.5);
+        clawLeftHand.setPosition(.25); //.3
+        clawRightHand.setPosition(.75); //.7
     }
 
     /**
@@ -211,25 +184,27 @@ public class RobotHardwareMecanum {
 
         if(Math.abs(Spin) > 0.1){
             // spin code
-            frontRightDrive.setPower(-Spin/2);
-            backRightDrive.setPower(-Spin/2);
+            frontRightDrive.setPower(-Spin/1.5);
+            backRightDrive.setPower(-Spin/1.5);
 
-            frontLeftDrive.setPower(Spin/2);
-            backLeftDrive.setPower(Spin/2);
+            frontLeftDrive.setPower(Spin/1.5);
+            backLeftDrive.setPower(Spin/1.5);
         } else {
-            frontLeftDrive.setPower(x/2);  //x1
-            backRightDrive.setPower(x/2);  //x1
+            frontLeftDrive.setPower(x/1.25);  //x1
+            backRightDrive.setPower(x/1.25);  //x1
 
-            frontRightDrive.setPower(y/2);
-            backLeftDrive.setPower(y/2);
+            frontRightDrive.setPower(y/1.25);
+            backLeftDrive.setPower(y/1.25);
 
 
         }
+
+
         // Drive both wheels.
 
 
 
-     }
+    }
 
     /**
      * Pass the requested wheel motor powers to the appropriate hardware drive motors.
