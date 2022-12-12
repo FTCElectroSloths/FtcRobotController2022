@@ -41,6 +41,7 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
          */
 
         robot.init(hardwareMap);
+        robot.openClaw();
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData(">", "ElectroSloths - v2, Robot Ready.  Press Play.");    //
@@ -120,7 +121,7 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
             if (gamepad1.right_bumper) {
                 robot.openClaw();
                 sleep(200);
-                robot.driveRobot(-0.35,0,0);
+                robot.driveRobot(-0.2,0,0);
 
                 robot.linearSlider.setPower(0);
                 sleep(200);

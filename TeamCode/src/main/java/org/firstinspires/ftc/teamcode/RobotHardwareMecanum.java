@@ -184,11 +184,11 @@ public class RobotHardwareMecanum {
 
         if(Math.abs(Spin) > 0.1){
             // spin code
-            frontRightDrive.setPower(-Spin/1.5);
-            backRightDrive.setPower(-Spin/1.5);
+            frontRightDrive.setPower(-Spin/1.75);
+            backRightDrive.setPower(-Spin/1.75);
 
-            frontLeftDrive.setPower(Spin/1.5);
-            backLeftDrive.setPower(Spin/1.5);
+            frontLeftDrive.setPower(Spin/1.75);
+            backLeftDrive.setPower(Spin/1.75);
         } else {
             frontLeftDrive.setPower(x/1.25);  //x1
             backRightDrive.setPower(x/1.25);  //x1
