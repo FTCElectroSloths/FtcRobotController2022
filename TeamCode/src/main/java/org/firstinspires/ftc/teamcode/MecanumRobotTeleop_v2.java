@@ -97,7 +97,7 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
                 sleep(250);
                 robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
                 if (newUpTarget <1000) {
-                    newUpTarget = Integer.max(1400,robot.linearSlider.getCurrentPosition() + 1400);  //1200
+                    newUpTarget = Integer.max(1300,robot.linearSlider.getCurrentPosition() + 1200);  //1200
 
                 }
                 else{

@@ -215,10 +215,10 @@ public class RobotHardwareMecanum {
 
     public void setDrivePower(double leftWheel, double rightWheel) {
         // Output the values to the motor drives.
-        frontLeftDrive.setPower(leftWheel);
+        frontLeftDrive.setPower(leftWheel*1.2);
         backRightDrive.setPower(leftWheel);
 
-        frontRightDrive.setPower(rightWheel);
+        frontRightDrive.setPower(rightWheel*1.2);
         backLeftDrive.setPower(rightWheel);
 
     }
