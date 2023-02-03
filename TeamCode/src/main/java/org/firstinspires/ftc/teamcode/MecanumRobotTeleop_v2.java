@@ -42,6 +42,9 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
          * The init(method of the hardware class does all the work here)
          */
 
+        boolean openClawOnRightBumper = false;
+        boolean rightBumperPressed = false;
+
         robot.init(hardwareMap);
         robot.openClaw();
 
@@ -104,11 +107,28 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
             }
             if (gamepad1.x ) {
                 robot.closeClaw();
-
             }
             if (gamepad1.b ) {
                 robot.openClaw();
+            }
 
+            if(robot.linearSlider.isBusy()){
+                openClawOnRightBumper = false;
+            } else {
+                if(rightBumperPressed){
+                    openClawOnRightBumper = true;
+                    rightBumperPressed = false;
+                }
+            }
+
+            if(openClawOnRightBumper){
+                openClawOnRightBumper = false;
+                robot.openClaw();
+                robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
+                robot.linearSlider.setTargetPosition(0);
+                robot.linearSlider.setPower(1.5);
+                robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.linearSlider.setPower(0);
             }
 
 //            if (gamepad1.left_trigger != 0){
@@ -145,7 +165,7 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
                 robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
                 if (robot.linearSlider.getCurrentPosition() <1000) {    //if (newUpTarget <1000) {
                     //newUpTarget = Integer.max(1300,robot.linearSlider.getCurrentPosition() + 1200);  //1200
-                    newUpTarget = 1300; //Integer.max(1300,robot.linearSlider.getCurrentPosition() + 1200);  //1200
+                    newUpTarget = 1250; //Integer.max(1300,robot.linearSlider.getCurrentPosition() + 1200);  //1200
 
                 }
                 else{
@@ -166,12 +186,13 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
                 //}
                 //robot.linearSlider.setPower(0);
             }
-
+/*
             if (gamepad1.right_bumper || triggerRightBumper ==1) {
                 robot.openClaw();
+                robot.driveRobot(-.3,0,0);
                 sleep(100);
                 //robot.driveRobot(-0.2,0,0);
-                robot.driveRobot(-.3,0,0);
+
 
                 robot.linearSlider.setPower(0);
                 sleep(100);
@@ -189,7 +210,38 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
                 //robot.linearSlider.setPower(0);
             }
 
+*/
+//Update on 2/2
+            if (gamepad1.right_bumper || triggerRightBumper ==1) {
+                robot.closeClaw();
 
+                robot.linearSlider.setPower(0);
+
+                robot.linearSlider.setDirection(DcMotor.Direction.REVERSE);
+                newDownTarget = 0; //robot.linearSlider.getCurrentPosition() - 1000;
+                robot.linearSlider.setTargetPosition(newDownTarget);  //newTarget
+                robot.linearSlider.setPower(.75);
+                robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                rightBumperPressed = true;
+                /*
+                while (robot.linearSlider.isBusy()) {
+                }
+              //  sleep(50);
+                robot.openClaw();
+
+                robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
+
+                if(robot.linearSlider.getCurrentPosition() <= 1000) {
+                    robot.linearSlider.setTargetPosition(robot.linearSlider.getCurrentPosition() + 50);
+                    robot.linearSlider.setPower(1.5);
+                    robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                }
+                */
+
+                //robot.linearSlider.setPower(0);
+            }
 
            /* if (gamepad1.y){
                 robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
