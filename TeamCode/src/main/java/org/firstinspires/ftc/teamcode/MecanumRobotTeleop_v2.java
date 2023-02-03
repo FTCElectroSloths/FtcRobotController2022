@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Math.abs;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -55,6 +57,8 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
 
             int newUpTarget = 0 ;
             int newDownTarget = 0;
+            int triggerRightBumper = 0;
+            int triggerLeftBumper = 0;
 
             // Run wheels in POV mode (note: The joystick goes negative when pushed forward, so negate it)
             // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
@@ -64,6 +68,49 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
             //robot.linearSlider.setPower(gamepad2.left_stick_y);
 
             double sliderSpeed = 0;
+
+            if(gamepad1.left_trigger != 0){
+                robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
+
+                if(robot.linearSlider.getCurrentPosition() <= 2200){
+                    robot.linearSlider.setTargetPosition(robot.linearSlider.getCurrentPosition() +200);
+                    robot.linearSlider.setPower(1.5);
+                    robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                }
+
+            } else if (gamepad1.right_trigger != 0){
+                if(robot.linearSlider.getCurrentPosition() >= 50){
+
+                    robot.linearSlider.setTargetPosition(abs(robot.linearSlider.getCurrentPosition()) -200);
+                    robot.linearSlider.setPower(.25);
+                    robot.linearSlider.setDirection(DcMotor.Direction.REVERSE);
+                    robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
+
+                }
+
+
+            } else {
+                robot.linearSlider.setPower(.5);
+            }
+
+            if (gamepad1.y ) {
+                //robot.openClaw();
+                triggerRightBumper = 1;
+            }
+            if (gamepad1.a) {
+                robot.closeClaw();
+                triggerLeftBumper = 1;
+            }
+            if (gamepad1.x ) {
+                robot.closeClaw();
+
+            }
+            if (gamepad1.b ) {
+                robot.openClaw();
+
+            }
+
 //            if (gamepad1.left_trigger != 0){
 //                sliderSpeed = gamepad1.left_trigger;
 //            } else {
@@ -90,18 +137,19 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
                 //robot.linearSlider.setPower(0);
             }
 */
-            if (gamepad1.left_bumper) {
+            if (gamepad1.left_bumper || triggerLeftBumper ==1) {
 
                 robot.closeClaw();
                 //wait(0.25);
                 sleep(250);
                 robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
-                if (newUpTarget <1000) {
-                    newUpTarget = Integer.max(1300,robot.linearSlider.getCurrentPosition() + 1200);  //1200
+                if (robot.linearSlider.getCurrentPosition() <1000) {    //if (newUpTarget <1000) {
+                    //newUpTarget = Integer.max(1300,robot.linearSlider.getCurrentPosition() + 1200);  //1200
+                    newUpTarget = 1300; //Integer.max(1300,robot.linearSlider.getCurrentPosition() + 1200);  //1200
 
                 }
                 else{
-                    newUpTarget = Integer.max(2200,robot.linearSlider.getCurrentPosition() + 800);  //1200
+                    newUpTarget = 2100; //Integer.max(2200,robot.linearSlider.getCurrentPosition() + 800);  //1200
                 }
 
 
@@ -111,20 +159,22 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
                     newUpTarget = 2200;
                 }
                 robot.linearSlider.setTargetPosition(newUpTarget);  //newTarget
-                robot.linearSlider.setPower(1);
+                robot.linearSlider.setPower(1.5);
                 robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                while (robot.linearSlider.isBusy()) {
-                }
+
+                //while (robot.linearSlider.isBusy()) {
+                //}
                 //robot.linearSlider.setPower(0);
             }
 
-            if (gamepad1.right_bumper) {
+            if (gamepad1.right_bumper || triggerRightBumper ==1) {
                 robot.openClaw();
-                sleep(200);
-                robot.driveRobot(-0.2,0,0);
+                sleep(100);
+                //robot.driveRobot(-0.2,0,0);
+                robot.driveRobot(-.3,0,0);
 
                 robot.linearSlider.setPower(0);
-                sleep(200);
+                sleep(100);
                 robot.closeClaw();
 
                 robot.linearSlider.setDirection(DcMotor.Direction.REVERSE);
@@ -149,7 +199,7 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
                 robot.linearSlider.setDirection(DcMotor.Direction.REVERSE);
             }*/
 
-            robot.linearSlider.setPower(gamepad1.left_trigger);
+           // robot.linearSlider.setPower(gamepad1.left_trigger);         // 2/1/2023
             //robot.linearSlider.setPower(-gamepad1.right_trigger);
 
 
@@ -160,12 +210,7 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
             if (gamepad1.dpad_right) {
                 robot.openClaw();
             }*/
-            if (gamepad1.y || gamepad1.x || gamepad1.b) {
-                robot.openClaw();
-            }
-            if (gamepad1.a) {
-                robot.closeClaw();
-            }
+
 
             //if(gamepad1.right_trigger){
 
