@@ -168,16 +168,19 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
                     newUpTarget = 1250; //Integer.max(1300,robot.linearSlider.getCurrentPosition() + 1200);  //1200
 
                 }
+                else if (robot.linearSlider.getCurrentPosition() >1000 && robot.linearSlider.getCurrentPosition() <2100){
+                    newUpTarget = 2100;
+                }
                 else{
-                    newUpTarget = 2100; //Integer.max(2200,robot.linearSlider.getCurrentPosition() + 800);  //1200
+                    newUpTarget = 2700; //Integer.max(2200,robot.linearSlider.getCurrentPosition() + 800);  //1200
                 }
 
 
                 //newUpTarget = robot.linearSlider.getCurrentPosition() + 1200;  //1200
                 //newUpTarget = 2200
-                if (newUpTarget > 2200) {
-                    newUpTarget = 2200;
-                }
+//                if (newUpTarget > 2200) {
+//                    newUpTarget = 2200;
+//                }
                 robot.linearSlider.setTargetPosition(newUpTarget);  //newTarget
                 robot.linearSlider.setPower(1.5);
                 robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
