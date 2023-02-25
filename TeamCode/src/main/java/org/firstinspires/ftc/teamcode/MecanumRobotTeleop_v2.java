@@ -75,7 +75,7 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
             if(gamepad1.left_trigger != 0){
                 robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
 
-                if(robot.linearSlider.getCurrentPosition() <= 2200){
+                if(robot.linearSlider.getCurrentPosition() <= 4200){
                     robot.linearSlider.setTargetPosition(robot.linearSlider.getCurrentPosition() +200);
                     robot.linearSlider.setPower(1.5);
                     robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);

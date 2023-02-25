@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+import com.sun.source.tree.WhileLoopTree;
 
 /**
  * This file works in conjunction with the External Hardware Class sample called: ConceptExternalHardwareClass.java
@@ -41,6 +43,8 @@ public class RobotHardwareMecanum {
 
     public Servo   clawLeftHand     = null;
     public Servo   clawRightHand    = null;
+
+    public ColorSensor coneSensor   = null;
 
     // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
     public static final double MID_SERVO       =  0.5 ;
@@ -90,6 +94,72 @@ public class RobotHardwareMecanum {
         backRightDrive   = hwMap.get(DcMotor.class, "MDriveBR");
 
         linearSlider   = hwMap.get(DcMotor.class, "MSlider");
+
+        coneSensor  = hwMap.colorSensor.get("ColorSensor");
+
+        // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
+        // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
+        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
+        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
+        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        linearSlider.setDirection(DcMotor.Direction.FORWARD);
+
+
+        // Set all motors to zero power
+        frontLeftDrive.setPower(0);
+        frontRightDrive.setPower(0);
+        backLeftDrive.setPower(0);
+        backRightDrive.setPower(0);
+
+        linearSlider.setPower(0);
+
+        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
+        // leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        linearSlider.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //linearSlider.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        linearSlider.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);   // sets the counter of ticks to 0
+
+
+        // Define and initialize ALL installed servos.
+        clawLeftHand = hwMap.get(Servo.class, "SClawLeft");
+        clawRightHand = hwMap.get(Servo.class, "SClawRight");
+
+//        clawLeftHand.setPosition(.75); //MID_SERVO higher opens up
+//        clawRightHand.setPosition(.75); // lower opens
+        // 12/9/22
+//        clawLeftHand.setPosition(.45); //MID_SERVO higher opens up
+//        clawRightHand.setPosition(.55); // lower opens
+
+        clawLeftHand.setPosition(.25);
+        clawRightHand.setPosition(.75);
+
+//        myOpMode.telemetry.addData(">", "Hardware Initialized - Electo Sloths");
+//        myOpMode.telemetry.update();
+    }
+
+    public void auto(HardwareMap ahwMap)    {
+        // Save the reference to the Hardware map
+        hwMap = ahwMap;
+
+        // Define and Initialize Motors (note: need to use reference to actual OpMode).
+        frontLeftDrive  = hwMap.get(DcMotor.class, "MDriveFL");
+        frontRightDrive = hwMap.get(DcMotor.class, "MDriveFR");
+        backLeftDrive   = hwMap.get(DcMotor.class, "MDriveBL");
+        backRightDrive   = hwMap.get(DcMotor.class, "MDriveBR");
+
+        linearSlider   = hwMap.get(DcMotor.class, "MSlider");
+
+        coneSensor  = hwMap.colorSensor.get("ColorSensor");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -244,6 +314,150 @@ public class RobotHardwareMecanum {
         offset = Range.clip(offset, -0.5, 0.5);
         clawLeftHand.setPosition(MID_SERVO + offset);
         clawRightHand.setPosition(MID_SERVO - offset);
+    }
+
+    public void driveForwardE(double power, int ticks){
+
+        // reset the encoders
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // set the mode to run using encoders
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // set the target position
+        frontLeftDrive.setTargetPosition(ticks);
+        frontRightDrive.setTargetPosition(ticks);
+        backLeftDrive.setTargetPosition(ticks);
+        backRightDrive.setTargetPosition(ticks);
+
+        // set the power and start moving
+        frontLeftDrive.setPower(power);
+        frontRightDrive.setPower(power);
+        backLeftDrive.setPower(power);
+        backRightDrive.setPower(power);
+
+        while(frontLeftDrive.isBusy() && frontRightDrive.isBusy() && backLeftDrive.isBusy() && backRightDrive.isBusy()) {
+            // DO NOTHING
+        }
+
+        // stop moving
+        frontLeftDrive.setPower(0);
+        frontRightDrive.setPower(0);
+        backLeftDrive.setPower(0);
+        backRightDrive.setPower(0);
+
+        // set to braking
+        frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+    }
+
+    public void driveBackwardE(double power, int ticks) {
+        driveForwardE(power, -ticks);
+    }
+
+    public void spinLeftE(double power, int ticks){
+
+        // reset the encoders
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // set the mode to run using encoders
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // set the target position
+        frontLeftDrive.setTargetPosition(-ticks);
+        frontRightDrive.setTargetPosition(ticks);
+        backLeftDrive.setTargetPosition(-ticks);
+        backRightDrive.setTargetPosition(ticks);
+
+        // set the power and start moving
+        frontLeftDrive.setPower(power);
+        frontRightDrive.setPower(power);
+        backLeftDrive.setPower(power);
+        backRightDrive.setPower(power);
+
+        while(frontLeftDrive.isBusy() && frontRightDrive.isBusy() && backLeftDrive.isBusy() && backRightDrive.isBusy()) {
+            // DO NOTHING
+        }
+
+        // stop moving
+        frontLeftDrive.setPower(0);
+        frontRightDrive.setPower(0);
+        backLeftDrive.setPower(0);
+        backRightDrive.setPower(0);
+
+        // set to braking
+        frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+    }
+
+    public void spinRightE(double power, int ticks) {
+        spinLeftE(power, -ticks);
+    }
+
+    public void slideLeftE(double power, int ticks){
+
+        // reset the encoders
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // set the mode to run using encoders
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // set the target position
+        frontLeftDrive.setTargetPosition(-ticks);
+        frontRightDrive.setTargetPosition(ticks);
+        backLeftDrive.setTargetPosition(ticks);
+        backRightDrive.setTargetPosition(-ticks);
+
+        // set the power and start moving
+        frontLeftDrive.setPower(power);
+        frontRightDrive.setPower(power);
+        backLeftDrive.setPower(power);
+        backRightDrive.setPower(power);
+
+        while(frontLeftDrive.isBusy() && frontRightDrive.isBusy() && backLeftDrive.isBusy() && backRightDrive.isBusy()) {
+            // DO NOTHING
+        }
+
+        // stop moving
+        frontLeftDrive.setPower(0);
+        frontRightDrive.setPower(0);
+        backLeftDrive.setPower(0);
+        backRightDrive.setPower(0);
+
+        // set to braking
+        frontLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+    }
+
+    public void slideRightE(double power, int ticks) {
+        slideLeftE(power, -ticks);
     }
 
     /*
