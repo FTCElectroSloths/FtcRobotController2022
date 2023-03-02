@@ -55,7 +55,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @Autonomous(name="Mecanum: Auto - Right", group="Mecanum")
-//@Disabled
+@Disabled
 public class Mecanum_Auto_Right extends LinearOpMode {
 
     /* Declare OpMode members. */

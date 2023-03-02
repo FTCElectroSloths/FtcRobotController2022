@@ -5,9 +5,6 @@ import static java.lang.Math.abs;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
-import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
 
 /**
  * This particular OpMode executes a POV Game style Teleop for a direct drive robot
@@ -21,9 +18,10 @@ import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCapt
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Mecanum: Teleop - v2", group="Mecanum")
+@TeleOp(name="Main_TELEOP", group="Mecanum")
 //@Disabled
-public class MecanumRobotTeleop_v2 extends LinearOpMode {
+public class
+Main_TELEOP extends LinearOpMode {
 
     /* Declare OpMode members. */
     RobotHardwareMecanum robot = new RobotHardwareMecanum();     // Use a Mecanum's hardware
@@ -75,7 +73,7 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
             if(gamepad1.left_trigger != 0){
                 robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
 
-                if(robot.linearSlider.getCurrentPosition() <= 4200){
+                if(robot.linearSlider.getCurrentPosition() <= 5000){
                     robot.linearSlider.setTargetPosition(robot.linearSlider.getCurrentPosition() +200);
                     robot.linearSlider.setPower(1.5);
                     robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -168,11 +166,12 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
                     newUpTarget = 1250; //Integer.max(1300,robot.linearSlider.getCurrentPosition() + 1200);  //1200
 
                 }
-                else if (robot.linearSlider.getCurrentPosition() >1000 && robot.linearSlider.getCurrentPosition() <2100){
+                //changed current slide from 1000-2100 to 900 - 2000
+                else if (robot.linearSlider.getCurrentPosition() >900 && robot.linearSlider.getCurrentPosition() <2000){
                     newUpTarget = 2100;
                 }
                 else{
-                    newUpTarget = 2700; //Integer.max(2200,robot.linearSlider.getCurrentPosition() + 800);  //1200
+                    newUpTarget = 2750; //Integer.max(2200,robot.linearSlider.getCurrentPosition() + 800);  //1200
                 }
 
 
@@ -216,14 +215,16 @@ public class MecanumRobotTeleop_v2 extends LinearOpMode {
 */
 //Update on 2/2
             if (gamepad1.right_bumper || triggerRightBumper ==1) {
-                robot.closeClaw();
 
-                robot.linearSlider.setPower(0);
+                //robot.linearSlider.setPower(0);
+               robot.closeClaw();
 
-                robot.linearSlider.setDirection(DcMotor.Direction.REVERSE);
-                newDownTarget = 0; //robot.linearSlider.getCurrentPosition() - 1000;
-                robot.linearSlider.setTargetPosition(newDownTarget);  //newTarget
-                robot.linearSlider.setPower(.75);
+              robot.linearSlider.setPower(0);
+
+               robot.linearSlider.setDirection(DcMotor.Direction.REVERSE);
+               newDownTarget = 0; //robot.linearSlider.getCurrentPosition() - 1000;
+               robot.linearSlider.setTargetPosition(newDownTarget);  //newTarget
+               robot.linearSlider.setPower(.75);
                 robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                 rightBumperPressed = true;

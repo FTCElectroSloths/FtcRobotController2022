@@ -32,10 +32,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
@@ -44,14 +42,10 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 
-import android.graphics.Color;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-
-@Autonomous(name="AUTO_KV", group="AUTOKV")
+@Autonomous(name="AUTO_KV_LEFT", group="HARRYBOTTERS")
 //@Disabled
-public class Auto_KV extends LinearOpMode {
+public class Auto_KV_Left extends LinearOpMode {
 
     //declare motors
     private DcMotor driveFLM;
@@ -129,17 +123,19 @@ public class Auto_KV extends LinearOpMode {
         //robot moving
         // useful information: wait = sleep(time in milliseconds); 1sec = 1000millis
         closeClaw();
-        driveBackwardE(0.5,2600);
+        driveBackwardE(.5,2600);
         colorsense();
         sleep(200);
+
+
 
         //robot where code
         if (robotWhere == 0) {
             //doing cone
-            //code
+            doConeThings();
 
             //parking
-            moveRightE(1, 1000);
+            moveRightE(.5, 1050);
 
         }
         if (robotWhere == 1) {
@@ -151,10 +147,10 @@ public class Auto_KV extends LinearOpMode {
         }
         if (robotWhere == 2) {
             //doing cone
-            //code
+            doConeThings();
 
             //parking
-            moveLeftE(1, 1000);
+            moveLeftE(.5, 1050);
         }
 
     }
@@ -164,63 +160,56 @@ public class Auto_KV extends LinearOpMode {
     private void doConeThings() throws InterruptedException {
         driveForwardE(.5, 600);
         sleep(100);
-        spinLeftE(.4, 1325);
-        slideUp(1, 2750);
-        driveForwardE(.5,350);
+        spinLeftE(.5, 1325);
+        slideUp(1, 3000);
+        driveForwardE(.5,400);
         sleep(200);
-        slideDown(.5, 100);
+        slideDown(.5, 200);
         openClaw();
-        slideDown(.75, 2150);
+        slideUp(.5,200);
+        slideDown(1, 2450);
         LinearSlider.setPower(0);
 
-        //mini methods execute
         goingStack();
 
         goingScoring();
 
-        //stack time
-        sleep(300);
-        driveBackwardE(.5, 325);
-        slideDown(.5, 50);
-        spinLeftE(.5, 1200);
-        driveForwardE(.5, 1030);
-        closeClaw();
-        sleep(200);
-        slideUp(1, 2450);
-        LinearSlider.setPower(0);
-        sleep(300);
-
-        goingScoring();
-        driveBackwardE(.5, 325);
+        driveBackwardE(.5, 400  );
         spinRightE(.5, 1325);
         closeClaw();
-        slideDown(.5, 570);
+        slideDown(1, 570);
+        openClaw();
+        driveBackwardE(.5, 100);
     }
 
     //sub mini methods for ease
     //go to cone
     private void goingScoring() throws InterruptedException {
-        driveBackwardE(.5, 1025);
+        driveBackwardE(.5, 1075); //added 50
         spinRightE(.5, 1200);
         slideUp(1, 50);
-        driveForwardE(.5, 325);
+        driveForwardE(.5, 400);
         sleep(100);
-        slideDown(.5, 100);
+        slideDown(.5, 50);
         sleep(100);
         openClaw();
-        slideDown(.5, 2300);
+        slideUp(1, 50);
+        driveBackwardE(.5, 50);
+        slideDown(1, 2500);
+        driveForwardE(.5, 50);
         LinearSlider.setPower(0);
     }
 
     //to stack
     private void goingStack() throws InterruptedException {
         sleep(300);
-        driveBackwardE(.5, 325);
+        driveBackwardE(.5, 400);
         spinLeftE(.5, 1200);
-        driveForwardE(.5, 1030);
+        driveForwardE(.5, 1080); //added 50
+        sleep(200);
         closeClaw();
         sleep(200);
-        slideUp(1, 2400);
+        slideUp(1, 2600);
         LinearSlider.setPower(0);
         sleep(300);
     }
@@ -557,6 +546,12 @@ public class Auto_KV extends LinearOpMode {
     //color sensor sensing code
     private void colorsense() {
 
+        telemetry.addData("Color?: ", coneSensor.red() );
+        sleep(100);
+        telemetry.addData("Color?: ", coneSensor.green() );
+        sleep(100);
+        telemetry.addData("Color?: ", coneSensor.blue());
+        telemetry.update();
         //area where sensor output tells what path to take
         if (coneSensor.red() > 40) { //(coneSensor.blue() & coneSensor.green())
             robotWhere = 0;
