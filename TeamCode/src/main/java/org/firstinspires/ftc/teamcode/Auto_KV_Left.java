@@ -122,6 +122,12 @@ public class Auto_KV_Left extends LinearOpMode {
 
         //robot moving
         // useful information: wait = sleep(time in milliseconds); 1sec = 1000millis
+
+        //test
+        
+
+        //test
+
         closeClaw();
         driveBackwardE(.5,2600);
         colorsense();
