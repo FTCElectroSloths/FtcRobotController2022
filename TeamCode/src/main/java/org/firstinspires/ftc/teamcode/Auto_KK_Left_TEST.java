@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.sun.tools.javac.processing.PrintingProcessor;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
@@ -67,64 +68,78 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
     private boolean isTravelComplete = true;
     private boolean isSlideMovementComplete = true;
 
+    public static final int HIGH_POLE_TICK_COUNT = 2200;
+    public static final int MEDIUM_POLE_TICK_COUNT = 1000;
+    public static final int SMALL_POLE_TICK_COUNT = 2000;
+    public static final int STACK_5_TICK_COUNT = 380;
+    public static final int STACK_4_TICK_COUNT = 2300;
+    public static final int STACK_3_TICK_COUNT = 0;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        if (true) {
+        //motors to configuration
+        driveFLM = hardwareMap.dcMotor.get("MDriveFL");
+        driveFRM = hardwareMap.dcMotor.get("MDriveFR");
+        driveBLM = hardwareMap.dcMotor.get("MDriveBL");
+        driveBRM = hardwareMap.dcMotor.get("MDriveBR");
+        LinearSlider = hardwareMap.dcMotor.get("MSlider");
 
-            //motors to configuration
-            driveFLM = hardwareMap.dcMotor.get("MDriveFL");
-            driveFRM = hardwareMap.dcMotor.get("MDriveFR");
-            driveBLM = hardwareMap.dcMotor.get("MDriveBL");
-            driveBRM = hardwareMap.dcMotor.get("MDriveBR");
-            LinearSlider = hardwareMap.dcMotor.get("MSlider");
+        //servos to configuration
+        clawLeftHand = hardwareMap.servo.get("SClawLeft");
+        clawRightHand = hardwareMap.servo.get("SClawRight");
 
-            //servos to configuration
-            clawLeftHand = hardwareMap.servo.get("SClawLeft");
-            clawRightHand = hardwareMap.servo.get("SClawRight");
+        //color-range sensor
+        coneSensor = hardwareMap.colorSensor.get("ColorSensor");
 
-            //color-range sensor
-            coneSensor = hardwareMap.colorSensor.get("ColorSensor");
+        //set direction of the motors to drive in mecanum fashion
+        driveFLM.setDirection(FORWARD);
+        driveFRM.setDirection(REVERSE);
+        driveBLM.setDirection(FORWARD);
+        driveBRM.setDirection(REVERSE);
+        LinearSlider.setDirection(FORWARD);
 
-            //set direction of the motors to drive in mecanum fashion
-            driveFLM.setDirection(FORWARD);
-            driveFRM.setDirection(REVERSE);
-            driveBLM.setDirection(FORWARD);
-            driveBRM.setDirection(REVERSE);
-            LinearSlider.setDirection(FORWARD);
+        //set motors to run with encoders
+        driveFLM.setMode(RUN_USING_ENCODER);
+        driveFRM.setMode(RUN_USING_ENCODER);
+        driveBLM.setMode(RUN_USING_ENCODER);
+        driveBRM.setMode(RUN_USING_ENCODER);
+        LinearSlider.setMode(RUN_USING_ENCODER);
 
-            //set motors to run with encoders
-            driveFLM.setMode(RUN_USING_ENCODER);
-            driveFRM.setMode(RUN_USING_ENCODER);
-            driveBLM.setMode(RUN_USING_ENCODER);
-            driveBRM.setMode(RUN_USING_ENCODER);
+        // reset encoders
+        driveFLM.setMode(STOP_AND_RESET_ENCODER);
+        driveFRM.setMode(STOP_AND_RESET_ENCODER);
+        driveBLM.setMode(STOP_AND_RESET_ENCODER);
+        driveBRM.setMode(STOP_AND_RESET_ENCODER);
+        LinearSlider.setMode(STOP_AND_RESET_ENCODER);
 
-            // set motors to brake, so they dont move during initialization
 
-            driveFLM.setZeroPowerBehavior(BRAKE);
-            driveFRM.setZeroPowerBehavior(BRAKE);
-            driveBLM.setZeroPowerBehavior(BRAKE);
-            driveBRM.setZeroPowerBehavior(BRAKE);
+        // set motors to brake, so they dont move during initialization
 
-            telemetry.addData("ready?: ", "stupid bitch");
+        driveFLM.setZeroPowerBehavior(BRAKE);
+        driveFRM.setZeroPowerBehavior(BRAKE);
+        driveBLM.setZeroPowerBehavior(BRAKE);
+        driveBRM.setZeroPowerBehavior(BRAKE);
+        LinearSlider.setZeroPowerBehavior(BRAKE);
+
+        telemetry.addData("ready?: ", "stupid bitch");
+        telemetry.update();
+
+        //color sense telemetry
+            telemetry.addData("red", coneSensor.red());
+            telemetry.addData("green", coneSensor.green());
+            telemetry.addData("blue", coneSensor.blue());
             telemetry.update();
 
-            //color sense telemetry
-            while (opModeIsActive()) {
-                telemetry.addData("red", coneSensor.red());
-                telemetry.addData("green", coneSensor.green());
-                telemetry.addData("blue", coneSensor.blue());
-                telemetry.update();
-            }
+        //initializing components
+        clawLeftHand.setPosition(.25);
+        clawRightHand.setPosition(.75);
 
-            //initializing components
-            clawLeftHand.setPosition(.25);
-            clawRightHand.setPosition(.75);
-
-        }
 
         waitForStart();
+
+        forwardAutoLeft();
 
         //robot moving
         // useful information: wait = sleep(time in milliseconds); 1sec = 1000millis
@@ -133,6 +148,38 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
 
 
         //test
+
+
+
+    }
+
+    private void forwardAutoLeft() throws InterruptedException{
+
+        closeClaw();
+        telemetry.addLine("Closed claw");
+        telemetry.update();
+
+        driveForwardE(.5,2400, false);
+        slideUp(1, 2150);
+
+        //sleep(20000);
+        colorsense();
+
+        driveBackwardE(.5, 150, true);
+        spinRightE(.25, 470, true);
+        driveForwardE(.25,300, true);
+
+        sleep(2000);
+
+//        driveBackwardE(.5,2600, false);
+//        telemetry.addLine("going backward");
+//        telemetry.update();
+//        slideUp(1, 3000, false);
+//        telemetry.addLine("Moving up the slide");
+//        telemetry.update();
+    }
+
+    private void backwardAutoLeft() throws InterruptedException{
 
         closeClaw();
         telemetry.addLine("Closed claw");
@@ -228,8 +275,8 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
             //parking
             moveLeftE(.5, 1050);
         }
-
     }
+
 
     //mini methods for ease
     //cone things
@@ -292,7 +339,7 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
 
     //ALL YOUR METHODS:
     //drive forward method
-    private boolean isRobotMoving(){
+    private boolean isRobotMoving() throws InterruptedException {
         if(driveFLM.isBusy() || driveFRM.isBusy() || driveBLM.isBusy() || driveBRM.isBusy()) {
             telemetry.addLine("Robot still moving");
             telemetry.update();
@@ -304,7 +351,7 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
         }
     }
 
-    private boolean isSlideMoving(){
+    private boolean isSlideMoving() throws InterruptedException {
         if(LinearSlider.isBusy()) {
             telemetry.addLine("slide still moving");
             telemetry.update();
@@ -316,7 +363,7 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
         }
     }
 
-    private void stopSlide(){
+    private void stopSlide() throws InterruptedException {
         telemetry.addLine("received call to stop slide");
         telemetry.update();
         LinearSlider.setPower(0);
@@ -325,7 +372,7 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
 
     }
 
-    private void stopRobot(){
+    private void stopRobot() throws InterruptedException {
         telemetry.addLine("received call to stop robot");
         telemetry.update();
         //stop moving
@@ -400,53 +447,7 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
 
     private void driveForwardE(double power, int ticks) throws InterruptedException {
 
-        // reset encoders
-        driveFLM.setMode(STOP_AND_RESET_ENCODER);
-        driveFRM.setMode(STOP_AND_RESET_ENCODER);
-        driveBLM.setMode(STOP_AND_RESET_ENCODER);
-        driveBRM.setMode(STOP_AND_RESET_ENCODER);
-
-        //set target position, basically so you dont have to do minus ticks when writing code
-        driveFLM.setTargetPosition(ticks);
-        driveFRM.setTargetPosition(ticks);
-        driveBLM.setTargetPosition(ticks);
-        driveBRM.setTargetPosition(ticks);
-
-        //set to run to position mode
-        driveFLM.setMode(RUN_TO_POSITION);
-        driveFRM.setMode(RUN_TO_POSITION);
-        driveBLM.setMode(RUN_TO_POSITION);
-        driveBRM.setMode(RUN_TO_POSITION);
-
-        //drive backward
-        driveFLM.setPower(power);
-        driveFRM.setPower(power);
-        driveBLM.setPower(power);
-        driveBRM.setPower(power);
-
-        //wait until target position
-        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) {
-
-        }
-
-        //stop moving
-        driveFLM.setPower(0);
-        driveFRM.setPower(0);
-        driveBLM.setPower(0);
-        driveBRM.setPower(0);
-        Thread.sleep(50);
-
-        driveFLM.setZeroPowerBehavior(BRAKE);
-        driveFRM.setZeroPowerBehavior(BRAKE);
-        driveBLM.setZeroPowerBehavior(BRAKE);
-        driveBRM.setZeroPowerBehavior(BRAKE);
-
-        driveFLM.setMode(RUN_USING_ENCODER);
-        driveFRM.setMode(RUN_USING_ENCODER);
-        driveBLM.setMode(RUN_USING_ENCODER);
-        driveBRM.setMode(RUN_USING_ENCODER);
-
-        isTravelComplete = true;
+       driveForwardE(power, ticks, true);
     }
 
     private void driveBackwardE(double power, int ticks, boolean waitOnTravel) throws InterruptedException {
@@ -503,55 +504,12 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
     //drive backward method
     private void driveBackwardE(double power, int ticks) throws InterruptedException {
 
-        // reset encoders
-        driveFLM.setMode(STOP_AND_RESET_ENCODER);
-        driveFRM.setMode(STOP_AND_RESET_ENCODER);
-        driveBLM.setMode(STOP_AND_RESET_ENCODER);
-        driveBRM.setMode(STOP_AND_RESET_ENCODER);
-
-        //set target position, basically so you dont have to do minus ticks when writing code
-        driveFLM.setTargetPosition(-ticks);
-        driveFRM.setTargetPosition(-ticks);
-        driveBLM.setTargetPosition(-ticks);
-        driveBRM.setTargetPosition(-ticks);
-
-        //set to run to position mode
-        driveFLM.setMode(RUN_TO_POSITION);
-        driveFRM.setMode(RUN_TO_POSITION);
-        driveBLM.setMode(RUN_TO_POSITION);
-        driveBRM.setMode(RUN_TO_POSITION);
-
-        //drive backward
-        driveFLM.setPower(power);
-        driveFRM.setPower(power);
-        driveBLM.setPower(power);
-        driveBRM.setPower(power);
-
-        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) {
-
-        }
-
-        //stop moving
-        driveFLM.setPower(0);
-        driveFRM.setPower(0);
-        driveBLM.setPower(0);
-        driveBRM.setPower(0);
-        Thread.sleep(50);
-
-        driveFLM.setZeroPowerBehavior(BRAKE);
-        driveFRM.setZeroPowerBehavior(BRAKE);
-        driveBLM.setZeroPowerBehavior(BRAKE);
-        driveBRM.setZeroPowerBehavior(BRAKE);
-
-        driveFLM.setMode(RUN_USING_ENCODER);
-        driveFRM.setMode(RUN_USING_ENCODER);
-        driveBLM.setMode(RUN_USING_ENCODER);
-        driveBRM.setMode(RUN_USING_ENCODER);
+        driveBackwardE(power, ticks, true);
 
     }
 
     //spin left method
-    private void spinLeftE(double power, int ticks) throws InterruptedException {
+    private void spinLeftE(double power, int ticks, boolean waitOnTravel) throws InterruptedException {
 
         // reset encoders
         driveFLM.setMode(STOP_AND_RESET_ENCODER);
@@ -577,31 +535,38 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
         driveBLM.setPower(power);
         driveBRM.setPower(power);
 
-        //wait until target position
-        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) {
+        if(waitOnTravel) {
+            //wait until target position
+            while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) {
 
+            }
+
+            //stop moving
+            driveFLM.setPower(0);
+            driveFRM.setPower(0);
+            driveBLM.setPower(0);
+            driveBRM.setPower(0);
+            Thread.sleep(50);
+
+            driveFLM.setZeroPowerBehavior(BRAKE);
+            driveFRM.setZeroPowerBehavior(BRAKE);
+            driveBLM.setZeroPowerBehavior(BRAKE);
+            driveBRM.setZeroPowerBehavior(BRAKE);
+
+            driveFLM.setMode(RUN_USING_ENCODER);
+            driveFRM.setMode(RUN_USING_ENCODER);
+            driveBLM.setMode(RUN_USING_ENCODER);
+            driveBRM.setMode(RUN_USING_ENCODER);
         }
 
-        //stop moving
-        driveFLM.setPower(0);
-        driveFRM.setPower(0);
-        driveBLM.setPower(0);
-        driveBRM.setPower(0);
-        Thread.sleep(50);
-
-        driveFLM.setZeroPowerBehavior(BRAKE);
-        driveFRM.setZeroPowerBehavior(BRAKE);
-        driveBLM.setZeroPowerBehavior(BRAKE);
-        driveBRM.setZeroPowerBehavior(BRAKE);
-
-        driveFLM.setMode(RUN_USING_ENCODER);
-        driveFRM.setMode(RUN_USING_ENCODER);
-        driveBLM.setMode(RUN_USING_ENCODER);
-        driveBRM.setMode(RUN_USING_ENCODER);
     }
 
-    //spin right method
-    private void spinRightE(double power, int ticks) throws InterruptedException {
+    private void spinLeftE(double power, int ticks) throws InterruptedException {
+        spinLeftE(power, ticks, true);
+    }
+
+        //spin right method
+    private void spinRightE(double power, int ticks, boolean waitOnTravel) throws InterruptedException {
 
         // reset encoders
         driveFLM.setMode(STOP_AND_RESET_ENCODER);
@@ -627,29 +592,35 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
         driveBLM.setPower(power);
         driveBRM.setPower(power);
 
-        //wait until target position
-        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) {
+        if(waitOnTravel) {
+            //wait until target position
+            while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) {
 
+            }
+
+            //stop moving
+            driveFLM.setPower(0);
+            driveFRM.setPower(0);
+            driveBLM.setPower(0);
+            driveBRM.setPower(0);
+            Thread.sleep(50);
+
+            driveFLM.setZeroPowerBehavior(BRAKE);
+            driveFRM.setZeroPowerBehavior(BRAKE);
+            driveBLM.setZeroPowerBehavior(BRAKE);
+            driveBRM.setZeroPowerBehavior(BRAKE);
+
+            driveFLM.setMode(RUN_USING_ENCODER);
+            driveFRM.setMode(RUN_USING_ENCODER);
+            driveBLM.setMode(RUN_USING_ENCODER);
+            driveBRM.setMode(RUN_USING_ENCODER);
         }
 
-        //stop moving
-        driveFLM.setPower(0);
-        driveFRM.setPower(0);
-        driveBLM.setPower(0);
-        driveBRM.setPower(0);
-        Thread.sleep(50);
-
-        driveFLM.setZeroPowerBehavior(BRAKE);
-        driveFRM.setZeroPowerBehavior(BRAKE);
-        driveBLM.setZeroPowerBehavior(BRAKE);
-        driveBRM.setZeroPowerBehavior(BRAKE);
-
-        driveFLM.setMode(RUN_USING_ENCODER);
-        driveFRM.setMode(RUN_USING_ENCODER);
-        driveBLM.setMode(RUN_USING_ENCODER);
-        driveBRM.setMode(RUN_USING_ENCODER);
     }
 
+    private void spinRightE(double power, int ticks) throws InterruptedException {
+        spinRightE(power, ticks, true);
+    }
     //move left method
     private void moveLeftE(double power, int ticks) throws InterruptedException {
 
@@ -753,25 +724,12 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
     //linear slide up
     private void slideUp(double power, int ticks) throws InterruptedException {
 
-        isSlideMovementComplete = false;
-
-        LinearSlider.setMode(STOP_AND_RESET_ENCODER);
-        LinearSlider.setTargetPosition(ticks);
-        LinearSlider.setMode(RUN_TO_POSITION);
-        LinearSlider.setPower(power);
-        while (LinearSlider.isBusy()) {
-
-        }
-        LinearSlider.setPower(0);
-        LinearSlider.setZeroPowerBehavior(BRAKE);
-        LinearSlider.setMode(RUN_USING_ENCODER);
-
-        isSlideMovementComplete = true;
+        slideUp(power, ticks, true);
     }
 
     private void slideUp(double power, int ticks, boolean waitOnMovement) throws InterruptedException {
 
-        LinearSlider.setMode(STOP_AND_RESET_ENCODER);
+        //LinearSlider.setMode(STOP_AND_RESET_ENCODER);
         LinearSlider.setTargetPosition(ticks);
         LinearSlider.setMode(RUN_TO_POSITION);
         LinearSlider.setPower(power);
@@ -780,9 +738,9 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
             while (LinearSlider.isBusy()) {
 
             }
-            LinearSlider.setPower(0);
-            LinearSlider.setZeroPowerBehavior(BRAKE);
-            LinearSlider.setMode(RUN_USING_ENCODER);
+            LinearSlider.setPower(0.1);
+            //LinearSlider.setZeroPowerBehavior(BRAKE);
+            //LinearSlider.setMode(RUN_USING_ENCODER);
 
         }
     }
@@ -790,22 +748,13 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
     //linear slide down
     private void slideDown(double power, int ticks) throws InterruptedException {
 
-        LinearSlider.setMode(STOP_AND_RESET_ENCODER);
-        LinearSlider.setTargetPosition(-ticks);
-        LinearSlider.setMode(RUN_TO_POSITION);
-        LinearSlider.setPower(power);
-        while (LinearSlider.isBusy()) {
-
-        }
-        LinearSlider.setPower(0);
-        LinearSlider.setZeroPowerBehavior(BRAKE);
-        LinearSlider.setMode(RUN_USING_ENCODER);
+        slideDown(power, ticks, true);
 
     }
 
     private void slideDown(double power, int ticks, boolean waitOnMovement) throws InterruptedException {
 
-        LinearSlider.setMode(STOP_AND_RESET_ENCODER);
+        //LinearSlider.setMode(STOP_AND_RESET_ENCODER);
         LinearSlider.setTargetPosition(-ticks);
         LinearSlider.setMode(RUN_TO_POSITION);
         LinearSlider.setPower(power);
@@ -823,12 +772,14 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
     //color sensor sensing code
     private void colorsense() {
 
-//        telemetry.addData("Color - red(): ", "%.2f", coneSensor.red() );
-//        //sleep(100);
-//        telemetry.addData("Color - green(): ", "%.2f", coneSensor.green() );
-//        //sleep(100);
-//        telemetry.addData("Color - blue(): ", "%.2f", coneSensor.blue());
-//        telemetry.update();
+        telemetry.addData("Color - red(): ", coneSensor.red() );
+        //sleep(100);
+        telemetry.addData("Color - green(): ", coneSensor.green() );
+        //sleep(100);
+        telemetry.addData("Color - blue(): ", coneSensor.blue());
+        telemetry.update();
+        sleep(2000);
+
         //area where sensor output tells what path to take
         if (coneSensor.red() > 40) { //(coneSensor.blue() & coneSensor.green())
             robotWhere = 0;
