@@ -42,6 +42,8 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 
 @Autonomous(name="AUTO_KV_LEFT", group="HARRYBOTTERS")
 //@Disabled
@@ -92,11 +94,19 @@ public class Auto_KV_Left extends LinearOpMode {
             driveBRM.setDirection(REVERSE);
             LinearSlider.setDirection(FORWARD);
 
+            //reset encoders
+            driveFLM.setMode(STOP_AND_RESET_ENCODER);
+            driveFRM.setMode(STOP_AND_RESET_ENCODER);
+            driveBLM.setMode(STOP_AND_RESET_ENCODER);
+            driveBRM.setMode(STOP_AND_RESET_ENCODER);
+            LinearSlider.setMode(STOP_AND_RESET_ENCODER);
+
             //set motors to run with encoders
             driveFLM.setMode(RUN_USING_ENCODER);
             driveFRM.setMode(RUN_USING_ENCODER);
             driveBLM.setMode(RUN_USING_ENCODER);
             driveBRM.setMode(RUN_USING_ENCODER);
+            LinearSlider.setMode(RUN_USING_ENCODER);
 
             // set motors to brake, so they dont move during initialization
 
@@ -104,69 +114,124 @@ public class Auto_KV_Left extends LinearOpMode {
             driveFRM.setZeroPowerBehavior(BRAKE);
             driveBLM.setZeroPowerBehavior(BRAKE);
             driveBRM.setZeroPowerBehavior(BRAKE);
+            LinearSlider.setZeroPowerBehavior(BRAKE);
 
             telemetry.addData("ready?: ", "stupid bitch");
             telemetry.update();
 
             //color sense telemetry
 
-            telemetry.addData("red", coneSensor.red());
-            telemetry.addData("green", coneSensor.green());
-            telemetry.addData("blue", coneSensor.blue());
-            telemetry.update();
+
 
 
             //initializing components
             clawLeftHand.setPosition(.25);
             clawRightHand.setPosition(.75);
 
+            //turn led off
+            coneSensor.enableLed(false);
         }
 
         waitForStart();
-
         //robot moving
         // useful information: wait = sleep(time in milliseconds); 1sec = 1000millis
         //test
         //test
 
-        closeClaw();
-        driveForwardE(.5,2400, false);
-        slideUp(1, 2220);
+        slideUp(1, 2100, false);
+        driveForwardE(.55, 950, true);
+        coneSensor.enableLed(true);
         colorsense();
+        telemetry.addData("red", coneSensor.red());
+        telemetry.addData("green", coneSensor.green());
+        telemetry.addData("blue", coneSensor.blue());
         telemetry.addData("sensed", robotWhere);
         telemetry.update();
         sleep(500);
+        coneSensor.enableLed(false);
+        driveForwardE(.55, 1400, true);
 
-        //cones
+        //starter cone
         driveBackwardE(.5, 150, true);
-        spinRightE(.5, 450, true);
-        driveForwardE(.5,400, true);
+        spinRightE(.75, 500, true);
+        driveForwardE(.5,275, true);
+        sleep(100);
+
+        slideDown(1, 1700, false);
+        sleep(500);
+        openClaw();
+
+        //1st cone in stack
+        driveBackwardE(.55, 500, true);
+        sleep(100);
+
+        spinLeftE(.75, 1365, true);
+        driveForwardE(.55, 800, true);
+        closeClaw();
+        sleep(1000);
+        slideUp(1, 1700, true);
+        sleep(100);
+
+        driveBackwardE(.55, 800, true);
+        spinRightE(.75, 1365, true);
+        driveForwardE(.55, 500, true);
+        sleep(100);
+
+        //make sure slide is set to next cone level
+        slideDown(1, 1825, false);
+        sleep(500);
+        openClaw();
+
+        //2nd cone in stack
+        driveBackwardE(.55, 500, true);
+        sleep(100);
+
+        spinLeftE(.75, 1350, true);
+        driveForwardE(.55, 850, true);
+        closeClaw();
+        sleep(1000);
+        slideUp(1, 1825, true);
+        sleep(100);
+
+        driveBackwardE(.55, 800, true);
+        spinRightE(.75, 1350, true);
+        driveForwardE(.55, 500, true);
+        sleep(100);
+
+        //make sure slide is set to next cone level
+        slideDown(1, 2100, false);
+        sleep(500);
+        openClaw();
+
+        //to park
+        driveBackwardE(.55, 550,true);
+        spinLeftE(.75, 515, true);
 
 
 
         //robot where code
-        if (robotWhere == 0) {
-            //doing cone
-
-
-
-            //parking
-            //moveRightE(.5, 1050, true);
-
-        }
         if (robotWhere == 1) {
             //doing cone
 
 
+
             //parking
-            //sleep(500);
+            moveLeftE(.5, 1200, true);
+
         }
         if (robotWhere == 2) {
             //doing cone
 
 
             //parking
-            //moveLeftE(.5, 1050, true);
+            moveRightE(.3, 500, true);
+        }
+        if (robotWhere == 3) {
+            //doing cone
+
+
+            //parking
+            moveRightE(.5, 1100, true);
         }
 
     }
@@ -594,56 +659,55 @@ public class Auto_KV_Left extends LinearOpMode {
     }
 
     //linear slide up
-    private void slideUp(double power, int ticks) throws InterruptedException {
+    private void slideUp(double power, int ticks, boolean waitOnMovement) throws InterruptedException {
 
         LinearSlider.setMode(STOP_AND_RESET_ENCODER);
         LinearSlider.setTargetPosition(ticks);
         LinearSlider.setMode(RUN_TO_POSITION);
         LinearSlider.setPower(power);
 
-        while (LinearSlider.isBusy()) {
+        if(waitOnMovement) {
+            while (LinearSlider.isBusy()) {
+
+            }
+            LinearSlider.setPower(.05);
+            LinearSlider.setZeroPowerBehavior(BRAKE);
+            LinearSlider.setMode(RUN_USING_ENCODER);
 
         }
-        LinearSlider.setPower(0);
-        LinearSlider.setZeroPowerBehavior(BRAKE);
-        LinearSlider.setMode(RUN_USING_ENCODER);
 
         //if(waitOnMovement)
     }
 
     //linear slide down
-    private void slideDown(double power, int ticks) throws InterruptedException {
+    private void slideDown(double power, int ticks, boolean waitOnMovement) throws InterruptedException {
 
         LinearSlider.setMode(STOP_AND_RESET_ENCODER);
         LinearSlider.setTargetPosition(-ticks);
         LinearSlider.setMode(RUN_TO_POSITION);
         LinearSlider.setPower(power);
 
-        while (LinearSlider.isBusy()) {
+        if(waitOnMovement) {
+            while (LinearSlider.isBusy()) {
+
+            }
+            LinearSlider.setPower(.05);
+            LinearSlider.setZeroPowerBehavior(BRAKE);
+            LinearSlider.setMode(RUN_USING_ENCODER);
 
         }
-        LinearSlider.setPower(0);
-        LinearSlider.setZeroPowerBehavior(BRAKE);
-        LinearSlider.setMode(RUN_USING_ENCODER);
     }
 
     //color sensor sensing code
     private void colorsense() {
-
-        telemetry.addData("Color?: ", coneSensor.red() );
-        sleep(100);
-        telemetry.addData("Color?: ", coneSensor.green() );
-        sleep(100);
-        telemetry.addData("Color?: ", coneSensor.blue());
-        telemetry.update();
         //area where sensor output tells what path to take
-        if (coneSensor.red() > 40) { //(coneSensor.blue() & coneSensor.green())
-            robotWhere = 0;
+        if ((coneSensor.red() > coneSensor.blue()) && (coneSensor.red() > coneSensor.green())) { //(coneSensor.blue() & coneSensor.green())
+            robotWhere = 1;
         }else {
-            if (coneSensor.green() > 40) {//(coneSensor.red() & coneSensor.green())
-                robotWhere = 1;
-            }else{
+            if ((coneSensor.green() > coneSensor.red()) && (coneSensor.green() > coneSensor.blue())) {//(coneSensor.red() & coneSensor.green())
                 robotWhere = 2;
+            }else{
+                robotWhere = 3;
             }
         }
 
