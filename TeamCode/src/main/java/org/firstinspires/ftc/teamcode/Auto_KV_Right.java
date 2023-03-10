@@ -133,8 +133,6 @@ public class Auto_KV_Right extends LinearOpMode {
         waitForStart();
         //robot moving
         // useful information: wait = sleep(time in milliseconds); 1sec = 1000millis
-        //test
-        //test
 
         slideUp(1, 2100, false);
         driveForwardE(.5, 950, true);
@@ -156,7 +154,7 @@ public class Auto_KV_Right extends LinearOpMode {
         driveForwardE(.5,275, true);
         sleep(100);
 
-        slideDown(.5, 1700, false);
+        slideDown(.5, 1730, false);
         sleep(500);
         openClaw();
 
@@ -168,7 +166,7 @@ public class Auto_KV_Right extends LinearOpMode {
         driveForwardE(.5, 860, true);
         closeClaw();
         sleep(500);
-        slideUp(1, 1700, true);
+        slideUp(1, 1730, true);
         sleep(100);
 
         driveBackwardE(.5, 800, true);
@@ -177,7 +175,7 @@ public class Auto_KV_Right extends LinearOpMode {
         sleep(100);
 
         //make sure slide is set to next cone level
-        slideDown(.5, 1825, false);
+        slideDown(.5, 1900, false);
         sleep(500);
         openClaw();
 
@@ -189,7 +187,7 @@ public class Auto_KV_Right extends LinearOpMode {
         driveForwardE(.5, 850, true);
         closeClaw();
         sleep(1000);
-        slideUp(1, 1825, true);
+        slideUp(1, 1900, true);
         sleep(100);
 
         driveBackwardE(.5, 800, true);
@@ -199,11 +197,14 @@ public class Auto_KV_Right extends LinearOpMode {
 
         //make sure slide is set to next cone level
         slideDown(.5, 2100, false);
-        sleep(500);
+        sleep(200);
         openClaw();
+        //sleep(100);
 
         //to park
         driveBackwardE(.5, 550,true);
+        closeClaw();
+        slideDown(.5, 200, false);
         spinRightE(.5, 515, true);
 
 

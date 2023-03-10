@@ -211,11 +211,12 @@ public class Auto_KV_Left extends LinearOpMode {
         slideDown(.5, 2100, false);
         sleep(200);
         openClaw();
-        sleep(100);
+        //sleep(100);
 
         //to park
         driveBackwardE(.5, 550,true);
         closeClaw();
+        slideDown(.5, 200, false);
 
         spinLeftE(.5, 515, true);
 
