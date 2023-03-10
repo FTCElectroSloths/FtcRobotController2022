@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -47,8 +48,11 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.WhiteBa
 
 
 @Autonomous(name="AUTO_KK_LEFT_TEST", group="HARRYBOTTERS")
-//@Disabled
+@Disabled
 public class Auto_KK_Left_TEST extends LinearOpMode {
+
+    /* Declare OpMode members. */
+    RobotHardwareMecanum robot = new RobotHardwareMecanum();     // Use a Mecanum's hardware
 
     //declare motors
     private DcMotor driveFLM;
@@ -78,7 +82,8 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
+        robot.autoInit(hardwareMap);
+/*
         //motors to configuration
         driveFLM = hardwareMap.dcMotor.get("MDriveFL");
         driveFRM = hardwareMap.dcMotor.get("MDriveFR");
@@ -136,7 +141,7 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
         clawLeftHand.setPosition(.25);
         clawRightHand.setPosition(.75);
 
-
+*/
         waitForStart();
 
         forwardAutoLeft();
@@ -166,10 +171,10 @@ public class Auto_KK_Left_TEST extends LinearOpMode {
         colorsense();
 
         driveBackwardE(.5, 150, true);
-        spinRightE(.25, 470, true);
-        driveForwardE(.25,300, true);
+        spinRightE(.25, 500, true);
+        driveForwardE(.25,275, true);
 
-        sleep(2000);
+        sleep(5000);
 
 //        driveBackwardE(.5,2600, false);
 //        telemetry.addLine("going backward");

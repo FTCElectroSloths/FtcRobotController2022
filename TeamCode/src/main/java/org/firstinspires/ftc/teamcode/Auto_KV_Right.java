@@ -29,27 +29,23 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-
-import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import java.io.Closeable;
 
-
-@Autonomous(name="AUTO_KV_LEFT", group="HARRYBOTTERS")
+@Autonomous(name="AUTO_KV_RIGHT", group="HARRYBOTTERS")
 //@Disabled
-public class Auto_KV_Left extends LinearOpMode {
+public class Auto_KV_Right extends LinearOpMode {
 
     //declare motors
     private DcMotor driveFLM;
@@ -118,7 +114,7 @@ public class Auto_KV_Left extends LinearOpMode {
             driveBRM.setZeroPowerBehavior(BRAKE);
             LinearSlider.setZeroPowerBehavior(BRAKE);
 
-            telemetry.addData("ready?: ", "Electro Sloths");
+            telemetry.addData("ready?: ", "stupid bitch");
             telemetry.update();
 
             //color sense telemetry
@@ -156,11 +152,11 @@ public class Auto_KV_Left extends LinearOpMode {
 
         //starter cone
         driveBackwardE(.5, 150, true);
-        spinRightE(.5, 500, true);
+        spinLeftE(.5, 500, true);
         driveForwardE(.5,275, true);
         sleep(100);
 
-        slideDown(.5, 1730, false);
+        slideDown(.5, 1700, false);
         sleep(500);
         openClaw();
 
@@ -168,134 +164,67 @@ public class Auto_KV_Left extends LinearOpMode {
         driveBackwardE(.5, 500, true);
         sleep(100);
 
-        spinLeftE(.5, 1365, true);
+        spinRightE(.5, 1365, true);
         driveForwardE(.5, 860, true);
         closeClaw();
-        sleep(1000);
-        slideUp(1, 1730, true);
+        sleep(500);
+        slideUp(1, 1700, true);
         sleep(100);
 
         driveBackwardE(.5, 800, true);
-        spinRightE(.5, 1365, true);
+        spinLeftE(.5, 1365, true);
         driveForwardE(.5, 500, true);
         sleep(100);
 
         //make sure slide is set to next cone level
-        slideDown(.5, 500, true);
+        slideDown(.5, 1825, false);
+        sleep(500);
         openClaw();
-        sleep(100);
-        slideUp(1, 500, true);
-
-        //sleep(500);
-        //openClaw();
 
         //2nd cone in stack
         driveBackwardE(.5, 500, true);
-        slideDown(.5, 1900, false);
-
         sleep(100);
 
-        spinLeftE(.5, 1350, true);
+        spinRightE(.5, 1350, true);
         driveForwardE(.5, 850, true);
         closeClaw();
         sleep(1000);
-        slideUp(1, 1900, true);
+        slideUp(1, 1825, true);
         sleep(100);
 
         driveBackwardE(.5, 800, true);
-        spinRightE(.5, 1350, true);
+        spinLeftE(.5, 1350, true);
         driveForwardE(.5, 500, true);
         sleep(100);
 
         //make sure slide is set to next cone level
         slideDown(.5, 2100, false);
-        sleep(200);
+        sleep(500);
         openClaw();
-        sleep(100);
 
         //to park
         driveBackwardE(.5, 550,true);
-        closeClaw();
-
-        spinLeftE(.5, 515, true);
+        spinRightE(.5, 515, true);
 
 
 
         //robot where code
         if (robotWhere == 1) {
              //parking
-            moveLeftE(.5, 1200, true);
+            moveLeftE(.75, 1300, true);
 
         }
         if (robotWhere == 2) {
             //parking
-            moveRightE(.5, 300, true);
+            moveLeftE(.5, 200, true);
         }
         if (robotWhere == 3) {
             //parking
-            moveRightE(.75, 1400, true);
+            moveRightE(.75, 1200, true);
         }
 
     }
 
-    //mini methods for ease
-    //cone things
-    private void doConeThings() throws InterruptedException {
-//        driveForwardE(.5, 600, true);
-//        sleep(100);
-//        spinLeftE(.5, 1325, true);
-//        slideUp(1, 3000, true);
-//        driveForwardE(.5,400, true);
-//        sleep(200);
-//        slideDown(.5, 200, true);
-//        openClaw();
-//        slideUp(.5,200, true);
-//        slideDown(1, 2450, true);
-//        LinearSlider.setPower(0);
-//
-//        goingStack();
-//
-//        goingScoring();
-//
-//        driveBackwardE(.5, 400, true);
-//        spinRightE(.5, 1325, true);
-//        closeClaw();
-//        slideDown(1, 570, true);
-//        openClaw();
-//        driveBackwardE(.5, 100, true);
-    }
-
-    //sub mini methods for ease
-    //go to cone
-    private void goingScoring() throws InterruptedException {
-//        driveBackwardE(.5, 1075, true); //added 50
-//        spinRightE(.5, 1200, true);
-//        slideUp(1, 50, true);
-//        driveForwardE(.5, 400, true);
-//        sleep(100);
-//        slideDown(.5, 50, true);
-//        sleep(100);
-//        openClaw();
-//        slideUp(1, 50, true);
-//        driveBackwardE(.5, 50, true);
-//        slideDown(1, 2500, true);
-//        driveForwardE(.5, 50, true);
-//        LinearSlider.setPower(0);
-    }
-
-    //to stack
-    private void goingStack() throws InterruptedException {
-//        sleep(300);
-//        driveBackwardE(.5, 400, true);
-//        spinLeftE(.5, 1200, true);
-//        driveForwardE(.5, 1080, true); //added 50
-//        sleep(200);
-//        closeClaw();
-//        sleep(200);
-//        slideUp(1, 2600, true);
-//        LinearSlider.setPower(0);
-//        sleep(300);
-    }
 
     //stop moving
     private void stopRobot() throws InterruptedException {

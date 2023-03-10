@@ -73,7 +73,7 @@ Main_TELEOP extends LinearOpMode {
             if(gamepad1.left_trigger != 0){
                 robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
 
-                if(robot.linearSlider.getCurrentPosition() <= 5000){
+                if(robot.linearSlider.getCurrentPosition() <= 2500){
                     robot.linearSlider.setTargetPosition(robot.linearSlider.getCurrentPosition() +200);
                     robot.linearSlider.setPower(1.5);
                     robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -161,25 +161,18 @@ Main_TELEOP extends LinearOpMode {
                 //wait(0.25);
                 sleep(250);
                 robot.linearSlider.setDirection(DcMotor.Direction.FORWARD);
-                if (robot.linearSlider.getCurrentPosition() <1000) {    //if (newUpTarget <1000) {
-                    //newUpTarget = Integer.max(1300,robot.linearSlider.getCurrentPosition() + 1200);  //1200
-                    newUpTarget = 1250; //Integer.max(1300,robot.linearSlider.getCurrentPosition() + 1200);  //1200
-
+                if (robot.linearSlider.getCurrentPosition() <700) {    //if (newUpTarget <1000) {
+                    newUpTarget = 900; //Integer.max(1300,robot.linearSlider.getCurrentPosition() + 1200);  //1200
                 }
                 //changed current slide from 1000-2100 to 900 - 2000
-                else if (robot.linearSlider.getCurrentPosition() >900 && robot.linearSlider.getCurrentPosition() <2000){
-                    newUpTarget = 2100;
+                else if (robot.linearSlider.getCurrentPosition() >700 && robot.linearSlider.getCurrentPosition() <1300){
+                    newUpTarget = 1500;
                 }
                 else{
-                    newUpTarget = 2750; //Integer.max(2200,robot.linearSlider.getCurrentPosition() + 800);  //1200
+                    newUpTarget = 2050; //Integer.max(2200,robot.linearSlider.getCurrentPosition() + 800);  //1200
                 }
 
 
-                //newUpTarget = robot.linearSlider.getCurrentPosition() + 1200;  //1200
-                //newUpTarget = 2200
-//                if (newUpTarget > 2200) {
-//                    newUpTarget = 2200;
-//                }
                 robot.linearSlider.setTargetPosition(newUpTarget);  //newTarget
                 robot.linearSlider.setPower(1.5);
                 robot.linearSlider.setMode(DcMotor.RunMode.RUN_TO_POSITION);

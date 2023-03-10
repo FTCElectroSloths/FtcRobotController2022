@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -148,7 +154,7 @@ public class RobotHardwareMecanum {
 //        myOpMode.telemetry.update();
     }
 
-    public void auto(HardwareMap ahwMap)    {
+    public void autoInit(HardwareMap ahwMap)    {
         // Save the reference to the Hardware map
         hwMap = ahwMap;
 
@@ -162,54 +168,57 @@ public class RobotHardwareMecanum {
 
         coneSensor  = hwMap.colorSensor.get("ColorSensor");
 
-        // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
-        // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
-        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
-
-        linearSlider.setDirection(DcMotor.Direction.FORWARD);
-
-
-        // Set all motors to zero power
-        frontLeftDrive.setPower(0);
-        frontRightDrive.setPower(0);
-        backLeftDrive.setPower(0);
-        backRightDrive.setPower(0);
-
-        linearSlider.setPower(0);
-
-        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
-        // leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        linearSlider.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //linearSlider.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        linearSlider.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);   // sets the counter of ticks to 0
-
-
         // Define and initialize ALL installed servos.
         clawLeftHand = hwMap.get(Servo.class, "SClawLeft");
         clawRightHand = hwMap.get(Servo.class, "SClawRight");
 
-//        clawLeftHand.setPosition(.75); //MID_SERVO higher opens up
-//        clawRightHand.setPosition(.75); // lower opens
-        // 12/9/22
-//        clawLeftHand.setPosition(.45); //MID_SERVO higher opens up
-//        clawRightHand.setPosition(.55); // lower opens
+        // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
+        // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
+        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
+        //set direction of the motors to drive in mecanum fashion
+        frontLeftDrive.setDirection(FORWARD);
+        frontRightDrive.setDirection(REVERSE);
+        backLeftDrive.setDirection(FORWARD);
+        backRightDrive.setDirection(REVERSE);
+        linearSlider.setDirection(FORWARD);
 
+        //set motors to run with encoders
+        frontLeftDrive.setMode(RUN_USING_ENCODER);
+        frontRightDrive.setMode(RUN_USING_ENCODER);
+        backLeftDrive.setMode(RUN_USING_ENCODER);
+        backRightDrive.setMode(RUN_USING_ENCODER);
+        linearSlider.setMode(RUN_USING_ENCODER);
+
+        // reset encoders
+        frontLeftDrive.setMode(STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(STOP_AND_RESET_ENCODER);
+        backLeftDrive.setMode(STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(STOP_AND_RESET_ENCODER);
+        linearSlider.setMode(STOP_AND_RESET_ENCODER);
+
+
+        // set motors to brake, so they dont move during initialization
+
+        frontLeftDrive.setZeroPowerBehavior(BRAKE);
+        frontRightDrive.setZeroPowerBehavior(BRAKE);
+        backLeftDrive.setZeroPowerBehavior(BRAKE);
+        backRightDrive.setZeroPowerBehavior(BRAKE);
+        linearSlider.setZeroPowerBehavior(BRAKE);
+
+//        myOpMode.telemetry.addData("ready?: ", "stupid bitch");
+//        myOpMode.telemetry.update();
+//
+//        //color sense telemetry
+//        myOpMode.telemetry.addData("red", coneSensor.red());
+//        myOpMode.telemetry.addData("green", coneSensor.green());
+//        myOpMode.telemetry.addData("blue", coneSensor.blue());
+//        myOpMode.telemetry.update();
+
+        //initializing components
         clawLeftHand.setPosition(.25);
         clawRightHand.setPosition(.75);
 
-//        myOpMode.telemetry.addData(">", "Hardware Initialized - Electo Sloths");
-//        myOpMode.telemetry.update();
+
     }
 
     public void openClaw(){
