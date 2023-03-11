@@ -64,7 +64,7 @@ public class Auto_KV_Left extends LinearOpMode {
 
     //declare colorrange sensor
     private ColorSensor coneSensor;
-    private int robotWhere =0;
+    private int robotWhere = 2;
 
     private boolean isTravelComplete = true;
 
@@ -198,7 +198,7 @@ public class Auto_KV_Left extends LinearOpMode {
         spinLeftE(.5, 1350, true);
         driveForwardE(.5, 850, true);
         closeClaw();
-        sleep(1000);
+        sleep(500);
         slideUp(1, 1900, true);
         sleep(100);
 
@@ -211,31 +211,30 @@ public class Auto_KV_Left extends LinearOpMode {
         slideDown(.5, 2100, false);
         sleep(200);
         openClaw();
-        //sleep(100);
 
         //to park
         driveBackwardE(.5, 550,true);
         closeClaw();
-        slideDown(.5, 200, false);
-
         spinLeftE(.5, 515, true);
-
-
+        slideDown(.5, 300, true); //false
+        openClaw();
 
         //robot where code
         if (robotWhere == 1) {
              //parking
-            moveLeftE(.5, 1200, true);
+            moveLeftE(.75, 1200, true);
 
-        }
-        if (robotWhere == 2) {
+        } else if (robotWhere == 2) {
             //parking
             moveRightE(.5, 300, true);
-        }
-        if (robotWhere == 3) {
+        } else if (robotWhere == 3) {
             //parking
             moveRightE(.75, 1400, true);
+        } else {
+            moveRightE(.5, 300, true);
         }
+
+
 
     }
 
